@@ -8,7 +8,7 @@ public class ValidationException extends RuntimeException{
         super(message);
     }
 
-    public ValidationException(ErrorCode errorCode){
-        super(errorCode.status);
+    public ValidationException(ErrorStatus errorStatus){
+        super(errorStatus.status);
     }
 }

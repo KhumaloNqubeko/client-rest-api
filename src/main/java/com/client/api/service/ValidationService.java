@@ -1,8 +1,10 @@
 package com.client.api.service;
 
-import com.client.api.exception.ErrorCode;
+import com.client.api.exception.ErrorStatus;
 import com.client.api.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
@@ -13,41 +15,55 @@ import java.text.SimpleDateFormat;
 @Service
 public class ValidationService {
 
-    // {YYMMDD} {G} {SSS} {C}{A}{Z}
-    // {940823} {5} {341} {0}{8}{4}
-    public boolean validateIdNumber(final String idNumber) {
+    public void validateIdNumber(final String idNumber) {
+        if (StringUtils.isBlank(idNumber)) {
+            throw new ValidationException(ErrorStatus.ID_MUST_NOT_BE_NULL);
+        }
+
         if (idNumber.length() != 13) {
-            throw new ValidationException(ErrorCode.ID_NUMBER_LIMIT);
+            throw new ValidationException(ErrorStatus.ID_NUMBER_LIMIT);
         }
 
         try {
             Long.parseLong(idNumber);
         } catch (NumberFormatException e) {
-            throw new ValidationException(ErrorCode.ID_NUMBER_IS_NOT_A_NUMBER);
+            throw new ValidationException(ErrorStatus.ID_NUMBER_IS_NOT_A_NUMBER);
         }
 
-        if (!isValidDate(idNumber.substring(0, 6))) {
-            return false;
-        }
+        isValidDate(idNumber.substring(0, 6));
 
         int country = Integer.parseInt(idNumber.substring(10, 11));
 
         if (country != 0) {
-            throw new ValidationException(ErrorCode.NOT_SA_CITIZEN);
+            throw new ValidationException(ErrorStatus.NOT_SA_CITIZEN);
         }
-
-
-        return true;
     }
 
-    private boolean isValidDate(final String strDate) {
+    private void isValidDate(final String strDate) {
         DateFormat sdf = new SimpleDateFormat("yyMMdd");
         sdf.setLenient(false);
         try {
             sdf.parse(strDate);
         } catch (ParseException e) {
-            throw new ValidationException(ErrorCode.INVALID_DATE);
+            throw new ValidationException(ErrorStatus.INVALID_DATE);
         }
-        return true;
+    }
+
+    public void validateFirstName(final String firstName) {
+        if (StringUtils.isBlank(firstName)) {
+            throw new ValidationException(ErrorStatus.FIRSTNAME_MUST_NOT_BE_NULL);
+        }
+    }
+
+    public void validateLastName(final String lastName) {
+        if (StringUtils.isBlank(lastName)) {
+            throw new ValidationException(ErrorStatus.LASTNAME_MUST_NOT_BE_NULL);
+        }
+    }
+
+    public void checkMobileNumberDuplicate(boolean exists) {
+        if (exists) {
+            throw new ValidationException(ErrorStatus.MOBILE_NUMBER_ALREADY_EXIST);
+        }
     }
 }

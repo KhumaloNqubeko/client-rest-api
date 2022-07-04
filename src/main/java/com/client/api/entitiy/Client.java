@@ -23,13 +23,18 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    // Required
+    @Column(nullable = false)
     private String firstName;
-    // Required
+
+    @Column(nullable = false)
     private String lastName;
+
+    @Column(unique = true)
     private String mobileNumber;
 
-    // Unique and Required
+    @Column(unique = true, nullable = false)
     private String idNumber;
-    private long addressId;
+
+    @JoinColumn(name = "addressId", referencedColumnName = "id")
+    private Address addressId;
 }
