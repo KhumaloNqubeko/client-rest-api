@@ -20,5 +20,5 @@ public class ClientDto {
 
     // Unique and Required
     private String idNumber;
-    private long addressId;
+    private String address;
 }

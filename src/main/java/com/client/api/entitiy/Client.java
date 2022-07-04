@@ -35,6 +35,5 @@ public class Client {
     @Column(unique = true, nullable = false)
     private String idNumber;
 
-    @JoinColumn(name = "addressId", referencedColumnName = "id")
-    private Address addressId;
+    private String address;
 }

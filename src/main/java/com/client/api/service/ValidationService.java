@@ -15,7 +15,10 @@ import java.text.SimpleDateFormat;
 @Service
 public class ValidationService {
 
-    public void validateIdNumber(final String idNumber) {
+    public void validateIdNumber(final String idNumber, boolean exists) {
+        if (exists) {
+            throw new ValidationException(ErrorStatus.ID_NUMBER_ALREADY_EXIST);
+        }
         if (StringUtils.isBlank(idNumber)) {
             throw new ValidationException(ErrorStatus.ID_MUST_NOT_BE_NULL);
         }

@@ -6,8 +6,7 @@ import com.client.api.service.ClientService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ClientController {
@@ -19,11 +18,24 @@ public class ClientController {
         this.clientService = clientService;
     }
 
+    @PostMapping("/create")
     public ResponseEntity<String> createClient(@RequestBody ClientDto clientDto) {
 
         ResponseMessage responseMessage = clientService.createClient(clientDto);
 
-        return ResponseEntity.status(responseMessage.getHttpStatus())
+        return ResponseEntity
+                .status(responseMessage.getHttpStatus())
+                .body(responseMessage.getMessage());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateClient(
+            @PathVariable(value = "id") long clientId,
+            @RequestBody ClientDto clientDto) {
+        ResponseMessage responseMessage = clientService.updateClient(clientId, clientDto);
+
+        return ResponseEntity
+                .status(responseMessage.getHttpStatus())
                 .body(responseMessage.getMessage());
     }
 }
