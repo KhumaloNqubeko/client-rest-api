@@ -4,12 +4,14 @@ import com.client.api.dto.ClientDto;
 import com.client.api.dto.ResponseMessage;
 import com.client.api.service.ClientService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 public class ClientController {
 
@@ -21,19 +23,21 @@ public class ClientController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createClient(@RequestBody ClientDto clientDto) {
+    public ResponseEntity<String> createClient(final @RequestBody ClientDto clientDto) {
 
+        log.debug("Request: [{}]", clientDto);
         ResponseMessage responseMessage = clientService.createClient(clientDto);
+        log.debug("Response: [{}]", responseMessage);
 
         return ResponseEntity
                 .status(responseMessage.getHttpStatus())
                 .body(responseMessage.getMessage());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<String> updateClient(
-            @PathVariable(value = "id") long clientId,
-            @RequestBody ClientDto clientDto) {
+            final @PathVariable(value = "id") long clientId,
+            final @RequestBody ClientDto clientDto) {
         ResponseMessage responseMessage = clientService.updateClient(clientId, clientDto);
 
         return ResponseEntity
@@ -43,7 +47,7 @@ public class ClientController {
 
     @GetMapping("/search")
     public @ResponseBody
-    List<ClientDto> searchClient(@RequestParam String keyword) {
+    List<ClientDto> searchClient(final @RequestParam String keyword) {
         return clientService.searchClient(keyword);
     }
 }

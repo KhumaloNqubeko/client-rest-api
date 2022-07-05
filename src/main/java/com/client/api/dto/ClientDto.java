@@ -1,16 +1,13 @@
 package com.client.api.dto;
 
-import lombok.Setter;
-import lombok.Getter;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 public class ClientDto {
     // Required
     private String firstName;

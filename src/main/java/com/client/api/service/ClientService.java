@@ -3,10 +3,10 @@ package com.client.api.service;
 import com.client.api.dto.ClientDto;
 import com.client.api.dto.ResponseMessage;
 import com.client.api.entitiy.Client;
-import com.client.api.exception.ClientNotFoundException;
 import com.client.api.exception.ErrorStatus;
 import com.client.api.exception.ValidationException;
 import com.client.api.repository.ClientRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class ClientService {
 
@@ -45,28 +47,29 @@ public class ClientService {
     }
 
     public ResponseMessage updateClient(final long id, final ClientDto clientDto) {
-        Client client = clientRepository.findById(id)
-                .orElse(null);
+        Optional<Client> client = clientRepository.findById(id);
 
-        if (client == null) {
+        if (!client.isPresent()) {
             return ResponseMessage.builder()
                     .httpStatus(HttpStatus.BAD_REQUEST)
                     .message(ErrorStatus.CLIENT_NOT_FOUND.status)
                     .build();
         }
 
+        log.debug("Client: [{}]", client.get());
+
         ResponseMessage responseMessage = validateRequest(clientDto, true);
         if (responseMessage.getHttpStatus().equals(HttpStatus.BAD_REQUEST)) {
             return responseMessage;
         }
 
-        client.setFirstName(clientDto.getFirstName());
-        client.setLastName(clientDto.getLastName());
-        client.setMobileNumber(clientDto.getMobileNumber());
-        client.setIdNumber(clientDto.getIdNumber());
-        client.setAddress(clientDto.getAddress());
+        client.get().setFirstName(clientDto.getFirstName());
+        client.get().setLastName(clientDto.getLastName());
+        client.get().setMobileNumber(clientDto.getMobileNumber());
+        client.get().setIdNumber(clientDto.getIdNumber());
+        client.get().setAddress(clientDto.getAddress());
 
-        clientRepository.save(client);
+        clientRepository.save(client.get());
 
         return ResponseMessage.builder()
                 .httpStatus(HttpStatus.CREATED)
@@ -74,11 +77,11 @@ public class ClientService {
                 .build();
     }
 
-    public ResponseMessage validateRequest(final ClientDto clientDto, boolean isUpdate) {
+    private ResponseMessage validateRequest(final ClientDto clientDto, boolean isUpdate) {
         try {
             Client clientById = clientRepository.findByIdNumber(clientDto.getIdNumber()).orElse(null);
 
-            validationService.validateIdNumber(clientDto.getIdNumber(), clientById != null && !isUpdate);
+            validationService.validateIdNumber(clientDto.getIdNumber(), clientById != null && isUpdate);
             validationService.validateFirstName(clientDto.getFirstName());
             validationService.validateLastName(clientDto.getLastName());
 
