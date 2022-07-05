@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ClientService {
 
@@ -97,7 +100,21 @@ public class ClientService {
         }
     }
 
-    public Client convertToEntity(final ClientDto clientDto) {
+    public List<ClientDto> searchClient(final String searchKeyword) {
+        List<ClientDto> clients = new ArrayList<>();
+
+        clientRepository.searchClient(searchKeyword).forEach(c -> {
+            clients.add(convertToDto(c));
+        });
+
+        return clients;
+    }
+
+    private Client convertToEntity(final ClientDto clientDto) {
         return modelMapper.map(clientDto, Client.class);
+    }
+
+    private ClientDto convertToDto(final Client client) {
+        return modelMapper.map(client, ClientDto.class);
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class ClientController {
 
@@ -37,5 +39,11 @@ public class ClientController {
         return ResponseEntity
                 .status(responseMessage.getHttpStatus())
                 .body(responseMessage.getMessage());
+    }
+
+    @GetMapping("/search")
+    public @ResponseBody
+    List<ClientDto> searchClient(@RequestParam String keyword) {
+        return clientService.searchClient(keyword);
     }
 }
